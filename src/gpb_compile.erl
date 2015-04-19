@@ -3551,11 +3551,18 @@ format_hrl(Mod, Defs, Opts) ->
        ?f("-endif.~n")]).
 
 format_msg_record(Msg, Fields, Opts, Defs) ->
-    [?f("-record(~p,~n", [Msg]),
-     ?f("        {"),
-     outdent_first(format_hfields(8+1, Fields, Opts, Defs)),
-     "\n",
-     ?f("        }).~n")].
+    [
+        ?f("-ifndef(~p).~n", [Msg]),
+        ?f("-define(~p, true).~n", [Msg]),
+        "\n",
+        ?f("-record(~p,~n", [Msg]),
+        ?f("        {"),
+        outdent_first(format_hfields(8 + 1, Fields, Opts, Defs)),
+        "\n",
+        ?f("        }).~n"),
+        "\n",
+        ?f("-endif.~n")
+    ].
 
 format_hfields(Indent, Fields, CompileOpts, Defs) ->
     TypeSpecs = get_type_specs_by_opts(CompileOpts),

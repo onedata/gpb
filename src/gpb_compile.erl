@@ -4765,24 +4765,23 @@ format_load_nif(Mod, Opts) ->
     case proplists:get_value(load_nif, Opts, '$undefined') of
         '$undefined' ->
             ["load_nif() ->\n",
-             %% Note: using ?MODULE here has impacts on compiling to
-             %% binary, because we don't pass it through the preprocessor
-             %% maybe we should?
-             "    SelfDir = filename:dirname(code:which(?MODULE)),\n",
-             "    NifDir = case lists:reverse(filename:split(SelfDir)) of\n"
-             "                 [\"ebin\" | PDR] ->\n"
-             "                      PD = filename:join(lists:reverse(PDR)),\n",
-             "                      filename:join(PD, \"priv\");\n",
-             "                 _ ->\n",
-             "                      SelfDir\n",
-             "             end,\n",
-             "    NifBase = \"", atom_to_list(Mod) ++ ".nif", "\",\n",
-             "    Nif = filename:join(NifDir, NifBase),\n",
-             ?f("    erlang:load_nif(Nif, ~w).\n", [VsnAsList])];
+                %% Note: using ?MODULE here has impacts on compiling to
+                %% binary, because we don't pass it through the preprocessor
+                %% maybe we should?
+                "    SelfDir = filename:dirname(code:which(?MODULE)),\n",
+                "    NifDir = case lists:reverse(filename:split(SelfDir)) of\n"
+                "                 [\"ebin\" | PDR] ->\n"
+                "                      filename:join(lists:reverse([\"priv\" | PDR]));\n",
+                "                 _ ->\n",
+                "                      SelfDir\n",
+                "             end,\n",
+                "    NifBase = \"", atom_to_list(Mod) ++ ".nif", "\",\n",
+                "    Nif = filename:join(NifDir, NifBase),\n",
+                ?f("    erlang:load_nif(Nif, ~w).\n", [VsnAsList])];
         LoadNifFnText when is_list(LoadNifFnText); is_binary(LoadNifFnText) ->
             [replace_tilde_s(iolist_to_binary(LoadNifFnText),
-                             iolist_to_binary(?f("\"~s.nif\"", [Mod])),
-                             iolist_to_binary(?f("~w", [VsnAsList])))]
+                iolist_to_binary(?f("\"~s.nif\"", [Mod])),
+                iolist_to_binary(?f("~w", [VsnAsList])))]
     end.
 
 replace_tilde_s(<<"{{nifbase}}", Rest/binary>>, ModBin, VsnBin) ->

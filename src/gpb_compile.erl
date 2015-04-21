@@ -3791,14 +3791,19 @@ is_lite_rt(Defs) ->
 
 format_nif_cc_includes(Mod, Defs, _Opts) ->
     IsLiteRT = is_lite_rt(Defs),
-    ["#include <string.h>\n",
-     "#include <string>\n",
-     "\n",
-     "#include <erl_nif.h>\n",
-     "\n",
-     ?f("#include \"~s.pb.h\"\n", [Mod]),
-     ["#include <google/protobuf/message_lite.h>\n" || IsLiteRT],
-     "\n"].
+    CPkg = get_cc_pkg(Defs),
+    [
+        "#include <string.h>\n",
+        "#include <string>\n",
+        "\n",
+        "#include <erl_nif.h>\n",
+        "\n",
+        ?f("#include \"~s.pb.h\"\n", [Mod]),
+        ["#include <google/protobuf/message_lite.h>\n" || IsLiteRT],
+        "\n",
+        ?f("using namespace ~s;\n", [CPkg]),
+        "\n"
+    ].
 
 format_nif_cc_oneof_version_check_if_present(Defs) ->
     case contains_oneof(Defs) of

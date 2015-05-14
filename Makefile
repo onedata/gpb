@@ -27,7 +27,7 @@
 #                    NB: must end with a slash!
 # VERBOSE         -- set (to any value) to make the following steps verbose:
 #                    * eunit testing
-#                    * generation of the include/gpb_version.hrl and 
+#                    * generation of the include/gpb_version.hrl and
 #                      ebin/gpb.app files
 #                    * edoc generation command
 #                    * xref checking command
@@ -209,7 +209,7 @@ $(descr_encoder): $(DESCR_PROTO) $(BEAMS)
 		-s gpb_compile c $(abspath $(descr_src))/gpb_descriptor.proto
 
 # To generate the ebin/gpb.app file, process the src/gpb.app.src file
-$(ebin)/gpb.app: $(src)/gpb.app.src | $(ebin)
+$(ebin)/gpb.app: $(src)/gpb.app.src priv/vsn.git | $(ebin)
 	@echo Generating $@...
 	$(silencer)$(ERL) +B -noshell -noinput -eval " \
 	    try \
@@ -234,7 +234,11 @@ $(ebin)/gpb.app: $(src)/gpb.app.src | $(ebin)
 		halt(1) \
 	    end."
 
-$(incdir)/gpb_version.hrl: $(incdir)/gpb_version.hrl.in
+priv/vsn.git:
+	mkdir -p priv
+	git describe --always --tags --match '[0-9]*.[0-9]*' > priv/vsn.git
+
+$(incdir)/gpb_version.hrl: priv/vsn.git $(incdir)/gpb_version.hrl.in
 	@echo Generating $@...
 	$(silencer)$(build)/mk_version_hrl \
 	    < include/gpb_version.hrl.in \

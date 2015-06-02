@@ -209,7 +209,7 @@ $(descr_encoder): $(DESCR_PROTO) $(BEAMS)
 		-s gpb_compile c $(abspath $(descr_src))/gpb_descriptor.proto
 
 # To generate the ebin/gpb.app file, process the src/gpb.app.src file
-$(ebin)/gpb.app: $(src)/gpb.app.src priv/vsn.git | $(ebin)
+$(ebin)/gpb.app: $(src)/gpb.app.src priv/git.vsn | $(ebin)
 	@echo Generating $@...
 	$(silencer)$(ERL) +B -noshell -noinput -eval " \
 	    try \
@@ -234,11 +234,11 @@ $(ebin)/gpb.app: $(src)/gpb.app.src priv/vsn.git | $(ebin)
 		halt(1) \
 	    end."
 
-priv/vsn.git:
+priv/git.vsn:
 	mkdir -p priv
-	git describe --always --tags --match '[0-9]*.[0-9]*' > priv/vsn.git
+	git describe --always --tags --match '[0-9]*.[0-9]*' > priv/git.vsn
 
-$(incdir)/gpb_version.hrl: priv/vsn.git $(incdir)/gpb_version.hrl.in
+$(incdir)/gpb_version.hrl: priv/git.vsn $(incdir)/gpb_version.hrl.in
 	@echo Generating $@...
 	$(silencer)$(build)/mk_version_hrl \
 	    < include/gpb_version.hrl.in \

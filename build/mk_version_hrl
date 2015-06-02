@@ -1,7 +1,7 @@
 #! /bin/sh
 
 sed \
-    -e "s/@vsn@/`cat priv/vsn.git`/g" \
+    -e "s/@vsn@/`cat priv/git.vsn`/g" \
     -e "s/is expected to be/was/g" \
     -e '/^%% The version below/ i \
 %% DO NOT EDIT -- generated from gpb_version.hrl.in' \
